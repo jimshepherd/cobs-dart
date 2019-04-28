@@ -1,14 +1,14 @@
 name: cobs
 description: A Dart implementation of the COBS algorithm.
 version: 0.0.1
-author: Jim Shepherd
-homepage:
+author: Jim Shepherd <jeshep@gmail.com>
+homepage: https://github.com/jimshepherd/cobs-dart
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  collection:
+  collection: ^1.14.11
 
 dev_dependencies:
   test:
