@@ -1,0 +1,17 @@
+name: cobs
+description: A Dart implementation of the COBS algorithm.
+version: 0.0.1
+author: Jim Shepherd
+homepage:
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  collection:
+
+dev_dependencies:
+  test:
+
+# For information on the generic Dart part of this file, see the
+# following page: https://www.dartlang.org/tools/pub/pubspec
