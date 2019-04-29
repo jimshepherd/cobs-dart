@@ -26,15 +26,16 @@ class DecodeResult {
   DecodeStatus status;
 }
 
-int encodeDstBufMaxLen(int srcLen) {
-  return srcLen + (srcLen + 253)~/254;
+int encodeDstBufMaxLen(int srcLen, {bool withZero=false}) {
+  return srcLen + (srcLen + 253)~/254 + (withZero ? 1 : 0);
 }
 
 int decodeDstBufMaxLen(int srcLen){
   return srcLen == 0 ? 0 : srcLen - 1;
 }
 
-EncodeResult encodeCOBS(ByteData encoded, ByteData source) {
+EncodeResult encodeCOBS(ByteData encoded, ByteData source,
+    {bool withZero=false}) {
   EncodeResult result = new EncodeResult();
   result.outLen = 0;
   result.status = EncodeStatus.OK;
@@ -89,6 +90,10 @@ EncodeResult encodeCOBS(ByteData encoded, ByteData source) {
         }
       }
     }
+  }
+
+  if (withZero) {
+    encoded.setUint8(encodedWriteCounter++, 0x00);
   }
 
   /* We've reached the end of the source data (or possibly run out of output buffer)

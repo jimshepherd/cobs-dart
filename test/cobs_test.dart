@@ -18,7 +18,7 @@ void main() {
       expect(encodeResult.outLen, 0);
     });
 
-    test('dencodeCOBS returns error with null source data', () {
+    test('decodeCOBS returns error with null source data', () {
       ByteData source;
       var decoded = ByteData(1);
       DecodeResult decodeResult = decodeCOBS(decoded, source);
@@ -194,5 +194,19 @@ void main() {
           true);
     });
 
+    test('encode withZero appends zero byte', () {
+      var data = new Uint8List.fromList([ 1, 2, 3, 4, 5]);
+      var initData = ByteData.view(data.buffer);
+      ByteData encoded = ByteData(
+          encodeDstBufMaxLen(initData.lengthInBytes, withZero: true));
+      expect(encoded.lengthInBytes, 7);
+
+      EncodeResult encodeResult = encodeCOBS(encoded, initData, withZero: true);
+      expect(encodeResult.outLen, 7);
+      expect(encodeResult.status, EncodeStatus.OK);
+      expect(encoded.getUint8(6), 0x00);
+    });
+
+  });
   });
 }
