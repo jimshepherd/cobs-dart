@@ -205,3 +205,43 @@ DecodeResult decodeCOBS(ByteData decoded, ByteData source){
   result.outLen = decodedWriteCounter;
   return result;
 }
+
+/// Decodes a stream of COBS-encoded bytes into packets of decoded bytes.
+///
+/// The input bytes are provided in chunks through the [source] stream.
+Stream<ByteData> decodeCOBSStream(Stream<ByteData> source) async* {
+  // Stores any partial packets from the previous chunk.
+  var partial = ByteData(0);
+
+  // Wait until a new chunk is available, then process it.
+  await for (var chunk in source) {
+    // Get index of 0x00 byte if found
+    var offset = 0;
+    for (var i=0; i<chunk.lengthInBytes; i++) {
+      if (chunk.getUint8(i) == 0x00) {
+        // Packet delimiter found, now decode it
+        int encodedLength = partial.lengthInBytes + i - offset;
+        var encoded = ByteData(encodedLength);
+        var index = 0;
+        for (var ip=0; ip<partial.lengthInBytes; ip++) {
+          encoded.setUint8(index, partial.getUint8(ip));
+          index++;
+        }
+        for (var ie=offset; ie<i; ie++) {
+          encoded.setUint8(index, chunk.getUint8(ie));
+          index++;
+        }
+
+        partial = ByteData(0);
+        offset = i+1;
+
+        ByteData decoded = ByteData(decodeDstBufMaxLen(encodedLength));
+        DecodeResult result = decodeCOBS(decoded, encoded);
+        if (result.status == DecodeStatus.OK) {
+          yield ByteData.view(decoded.buffer, 0, result.outLen);
+        }
+      }
+    }
+    partial = chunk.buffer.asByteData(offset, chunk.lengthInBytes-offset);
+  }
+}

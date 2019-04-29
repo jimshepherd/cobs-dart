@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -208,5 +209,56 @@ void main() {
     });
 
   });
+
+  group('Decode ByteData stream using decodeCOBSStream', () {
+    test('decode stream of a complete packet', () async {
+      var data = new Uint8List.fromList([ 1, 2, 3, 4, 5, 0, 6, 7, 8, 9, 0 ]);
+      var initData = ByteData.view(data.buffer);
+      ByteData encoded = ByteData(encodeDstBufMaxLen(initData.lengthInBytes, withZero: true));
+      expect(encoded.lengthInBytes, 13);
+
+      var controller = new StreamController<ByteData>();
+      var decoder = decodeCOBSStream(controller.stream);
+
+      EncodeResult encodeResult = encodeCOBS(encoded, initData, withZero: true);
+      expect(encodeResult.outLen, 13);
+      expect(encodeResult.status, EncodeStatus.OK);
+
+      controller.sink.add(encoded);
+
+      await decoder.listen(expectAsync1((decoded) {
+        expect(
+            eq(decoded.buffer.asUint8List(), initData.buffer.asUint8List()),
+            true);
+      }, count: 1));
+    });
+
+    test('decode stream of two incomplete packets', () async {
+      var data = new Uint8List.fromList([ 1, 2, 3, 4, 5, 0, 6, 7, 8, 9, 0 ]);
+      var initData = ByteData.view(data.buffer);
+
+      ByteData encoded = ByteData(encodeDstBufMaxLen(initData.lengthInBytes, withZero: true));
+      expect(encoded.lengthInBytes, 13);
+
+      EncodeResult encodeResult = encodeCOBS(encoded, initData, withZero: true);
+      expect(encodeResult.outLen, 13);
+      expect(encodeResult.status, EncodeStatus.OK);
+
+      var first = encoded.buffer.asByteData(0, 4);
+      var second = encoded.buffer.asByteData(4);
+
+      var controller = new StreamController<ByteData>();
+      var decoder = decodeCOBSStream(controller.stream);
+
+      controller.sink.add(first);
+      controller.sink.add(second);
+
+      await decoder.listen(expectAsync1((decoded) {
+        expect(
+            eq(decoded.buffer.asUint8List(), initData.buffer.asUint8List()),
+            true);
+      }, count: 1));
+    });
+
   });
 }
