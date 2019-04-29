@@ -32,17 +32,18 @@ byte-stuffing method can potentially double the size of the packet in the
 worst case. COBS uses a different method for byte-stuffing, which has a much
 more reasonable worst-case overhead.
 
-For more details about COBS, see the references [#ieeeton]_ [#ppp]_.
+For more details about COBS, see the references [1][1] [2][2].
 
 
 ## References
 
-| [#ieeeton]   | [Consistent Overhead Byte Stuffing](http://www.stuartcheshire.org/papers/COBSforToN.pdf)
-|              | Stuart Cheshire and Mary Baker
-|              | IEEE/ACM Transations on Networking, Vol. 7, No. 2, April 1999
---------------------
-| [#ppp]       | [PPP Consistent Overhead Byte Stuffing (COBS)](http://tools.ietf.org/html/draft-ietf-pppext-cobs-00)
-|              | PPP Working Group Internet Draft
-|              | James Carlson, IronBridge Networks
-|              | Stuart Cheshire and Mary Baker, Stanford University
-|              | November 1997
+[Consistent Overhead Byte Stuffing][1]\
+Stuart Cheshire and Mary Baker\
+IEEE/ACM Transations on Networking, Vol. 7, No. 2, April 1999
+
+[PPP Consistent Overhead Byte Stuffing (COBS)][2]\
+PPP Working Group Internet Draft<br>James Carlson, IronBridge Networks\
+Stuart Cheshire and Mary Baker, Stanford University, November 1997
+
+[1]: http://www.stuartcheshire.org/papers/COBSforToN.pdf
+[2]: http://tools.ietf.org/html/draft-ietf-pppext-cobs-00
