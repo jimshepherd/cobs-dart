@@ -1,6 +1,6 @@
 name: cobs
-description: A Dart implementation of the COBS algorithm.
 version: 0.0.1
+description: A Dart implementation of the Consistent Overhead Byte Stuffing (COBS) algorithm.
 author: Jim Shepherd <jeshep@gmail.com>
 homepage: https://github.com/jimshepherd/cobs-dart
 
@@ -8,10 +8,10 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  collection: ^1.14.11
 
 dev_dependencies:
   test:
+  collection: ^1.14.11
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

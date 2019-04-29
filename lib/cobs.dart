@@ -2,17 +2,20 @@ library cobs;
 
 import 'dart:typed_data';
 
+/// [encodeCOBS()] status types
 enum EncodeStatus {
   OK,
   NULL_POINTER,
   OUT_BUFFER_OVERFLOW,
 }
 
+/// Status and length container of [encodeCOBS()] result.
 class EncodeResult {
   int outLen;
   EncodeStatus status;
 }
 
+/// [decodeCOBS()] status types.
 enum DecodeStatus {
   OK,
   NULL_POINTER,
@@ -21,19 +24,31 @@ enum DecodeStatus {
   INPUT_TOO_SHORT,
 }
 
+/// Status and length container of [decodeCOBS()] result.
 class DecodeResult {
   int outLen;
   DecodeStatus status;
 }
 
+/// Determine maximum encoded byte length for source containing [srcLen] bytes.
+///
+/// If [withZero] is true, the length is increased by 1 to allow room for a 0x00
+/// byte to be appended to the end
 int encodeDstBufMaxLen(int srcLen, {bool withZero=false}) {
   return srcLen + (srcLen + 253)~/254 + (withZero ? 1 : 0);
 }
 
+/// Determine maximum decoded byte length for source containing [srcLen] bytes.
 int decodeDstBufMaxLen(int srcLen){
   return srcLen == 0 ? 0 : srcLen - 1;
 }
 
+/// Encode [source] to [encoded] using COBS and return [EncodeResult] status.
+///
+/// If [withZero] is true, a 0x00 byte is appended to [encoded]
+/// The [EncodeResult] instance returned will include the actual length of the
+/// encoded byte array in [outLen] and the status of the encoding attempt in
+/// [status].
 EncodeResult encodeCOBS(ByteData encoded, ByteData source,
     {bool withZero=false}) {
   EncodeResult result = new EncodeResult();
@@ -116,6 +131,11 @@ EncodeResult encodeCOBS(ByteData encoded, ByteData source,
 }
 
 
+/// Decode [source] to [decoded] using COBS and return [DecodeResult] status.
+///
+/// The [DecodeResult] instance returned will include the actual length of the
+/// decoded byte array in [outLen] and the status of the decoding attempt in
+/// [status].
 DecodeResult decodeCOBS(ByteData decoded, ByteData source){
   DecodeResult result = new DecodeResult();
   result.outLen = 0;
