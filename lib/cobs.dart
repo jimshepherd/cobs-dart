@@ -34,12 +34,12 @@ class DecodeResult {
 ///
 /// If [withZero] is true, the length is increased by 1 to allow room for a 0x00
 /// byte to be appended to the end
-int encodeDstBufMaxLen(int srcLen, {bool withZero=false}) {
-  return srcLen + (srcLen + 253)~/254 + (withZero ? 1 : 0);
+int encodeDstBufMaxLen(int srcLen, {bool withZero = false}) {
+  return srcLen + (srcLen + 253) ~/ 254 + (withZero ? 1 : 0);
 }
 
 /// Determine maximum decoded byte length for source containing [srcLen] bytes.
-int decodeDstBufMaxLen(int srcLen){
+int decodeDstBufMaxLen(int srcLen) {
   return srcLen == 0 ? 0 : srcLen - 1;
 }
 
@@ -50,7 +50,7 @@ int decodeDstBufMaxLen(int srcLen){
 /// encoded byte array in [outLen] and the status of the encoding attempt in
 /// [status].
 EncodeResult encodeCOBS(ByteData encoded, ByteData source,
-    {bool withZero=false}) {
+    {bool withZero = false}) {
   EncodeResult result = new EncodeResult();
   result.outLen = 0;
   result.status = EncodeStatus.OK;
@@ -130,13 +130,12 @@ EncodeResult encodeCOBS(ByteData encoded, ByteData source,
   return result;
 }
 
-
 /// Decode [source] to [decoded] using COBS and return [DecodeResult] status.
 ///
 /// The [DecodeResult] instance returned will include the actual length of the
 /// decoded byte array in [outLen] and the status of the decoding attempt in
 /// [status].
-DecodeResult decodeCOBS(ByteData decoded, ByteData source){
+DecodeResult decodeCOBS(ByteData decoded, ByteData source) {
   DecodeResult result = new DecodeResult();
   result.outLen = 0;
   result.status = DecodeStatus.OK;
@@ -217,23 +216,23 @@ Stream<ByteData> decodeCOBSStream(Stream<ByteData> source) async* {
   await for (var chunk in source) {
     // Get index of 0x00 byte if found
     var offset = 0;
-    for (var i=0; i<chunk.lengthInBytes; i++) {
+    for (var i = 0; i < chunk.lengthInBytes; i++) {
       if (chunk.getUint8(i) == 0x00) {
         // Packet delimiter found, now decode it
         int encodedLength = partial.lengthInBytes + i - offset;
         var encoded = ByteData(encodedLength);
         var index = 0;
-        for (var ip=0; ip<partial.lengthInBytes; ip++) {
+        for (var ip = 0; ip < partial.lengthInBytes; ip++) {
           encoded.setUint8(index, partial.getUint8(ip));
           index++;
         }
-        for (var ie=offset; ie<i; ie++) {
+        for (var ie = offset; ie < i; ie++) {
           encoded.setUint8(index, chunk.getUint8(ie));
           index++;
         }
 
         partial = ByteData(0);
-        offset = i+1;
+        offset = i + 1;
 
         ByteData decoded = ByteData(decodeDstBufMaxLen(encodedLength));
         DecodeResult result = decodeCOBS(decoded, encoded);
@@ -242,6 +241,6 @@ Stream<ByteData> decodeCOBSStream(Stream<ByteData> source) async* {
         }
       }
     }
-    partial = chunk.buffer.asByteData(offset, chunk.lengthInBytes-offset);
+    partial = chunk.buffer.asByteData(offset, chunk.lengthInBytes - offset);
   }
 }

@@ -12,11 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
+      - uses: dart-lang/setup-dart@v1
 
       - name: Test
         run: |
-          flutter pub get
-          flutter test
+          pub get
+          test
